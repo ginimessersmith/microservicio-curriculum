@@ -1,0 +1,6 @@
+/dist
+/mongo
+/node_modules
+Dockerfile
+.env
+.dockerignore
