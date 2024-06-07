@@ -1,30 +1,36 @@
-import { Prop, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Request } from "./request.entity";
 
-export class Validation extends Document {
+@Entity({name:'validations'})
+export class Validation{
 
-    @Prop({
-        required: true
+    @PrimaryGeneratedColumn('uuid')
+    id: string
+
+    @Column({
+        type: 'int',
+        nullable: false
     })
     score: number
 
-    @Prop({
-        required: true
+    @Column({
+        type: 'decimal',
+        scale: 2,
+        precision: 2,
+        nullable: false
     })
     success_percentage: number
 
-    @Prop({
-        required: true
+    @Column({
+        type: 'text',
+        nullable: false
     })
     opinion: string
 
-    @Prop({
-        type: Types.ObjectId,
-        ref: 'Request',
-        unique: true,
-        required: true
-    })
+    @OneToOne(
+        () => Request,
+        (req) => req.validation
+    )
+    @JoinColumn()
     request: Request;
 }
-
-export const ValidationSchema = SchemaFactory.createForClass(Validation)

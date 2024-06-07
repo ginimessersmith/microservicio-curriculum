@@ -1,30 +1,49 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { Document } from "mongoose"
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Request } from './request.entity';
 
-@Schema()
-export class Campaign extends Document {
+@Entity({ name: 'campaigns' })
+export class Campaign {
 
-    @Prop({
-        unique: true,
-        index: true,
-        required:true,
+    @PrimaryGeneratedColumn('uuid')
+    id: string
+
+    @Column({
+        type: 'uuid',
+        nullable: false
     })
-    idEnterprise: number
+    idEnterprise: string
 
-    @Prop({
-        required: true,
+    @Column({
+        type: 'text',
+        nullable: false
     })
     name: string
 
-    @Prop({
-        required: true
+    @Column({
+        type: 'text',
+        nullable: false
+    })
+    nameEnterprise: string
+
+    @Column({
+        type: 'text',
+        nullable: false
     })
     description: string
 
-    @Prop({
-        required: true
+    @Column({
+        type: 'text',
+        nullable: false
     })
     parameters: string
-}
 
-export const CampaignSchema = SchemaFactory.createForClass(Campaign)
+    @OneToMany(
+        () => Request,
+        (req)=>req.campaign,
+        {
+            eager:true,
+            cascade:true
+        }
+    )
+    request: Request[]
+}

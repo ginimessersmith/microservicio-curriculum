@@ -1,39 +1,44 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
+
 import { Campaign } from "./campaign.entity";
-import { Validation } from "./validation.entity";
+import { Validation } from './validation.entity';
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Schema()
-export class Request extends Document {
+@Entity({ name: 'requests' })
+export class Request {
 
-    @Prop({
-        type: Types.ObjectId,
-        ref: 'Campaign',
-        required: true
-    })
-    campaign: Campaign;
+    @PrimaryGeneratedColumn('uuid')
+    id: string
 
-    @Prop({
-        required: true,
-        unique: true
+    @Column({
+        type: 'text',
+        nullable: false
     })
     emailPostulant: string
 
-    @Prop({
-        required: true,
+    @Column({
+        type: 'text',
+        nullable: false
     })
     namePostulant: string
 
-    @Prop({
-        required: true
+    @Column({
+        type: 'text',
+        nullable: false
     })
     curriculumVitae: string
 
-    @Prop({
-        type: Types.ObjectId,
-        ref: 'Validation'
-    })
-    validation: Validation;
-}
+    @ManyToOne(
+        () => Campaign,
+        (cam) => cam.request,
+        {
+            onDelete: 'CASCADE'
+        }
+    )
+    campaign: Campaign;
 
-export const RequestSchema = SchemaFactory.createForClass(Request)
+    @OneToOne(
+        ()=>Validation,
+        (val)=>val.request
+    )
+    validation:Validation
+}
