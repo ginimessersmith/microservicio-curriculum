@@ -13,5 +13,5 @@ export class CheckCurriculumDto {
 
     @IsInt()
     @IsOptional()
-    maxToekns: number
+    maxToekns?: number
 }

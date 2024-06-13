@@ -11,7 +11,4 @@ export class CreateRequestDto{
     @IsString()
     namePostulant: string
 
-    // @IsString()
-    // curriculumVitae: string
-
 }

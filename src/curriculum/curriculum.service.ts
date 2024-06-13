@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException, UnsupportedMediaTypeException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI, { InternalServerError } from 'openai';
 import { CheckCurriculumDto } from './dto/check-curriculum.dto';
@@ -15,11 +15,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from 'src/cloudinary/cloudinary-response';
 import * as mammoth from 'mammoth';
 import * as pdfParse from 'pdf-parse';
-
-
-
-
-
+import { getHeapSnapshot } from 'v8';
 
 @Injectable()
 export class CurriculumService {
@@ -63,23 +59,60 @@ export class CurriculumService {
 
             let cloud: CloudinaryResponse
             const curriculumBuffer = curriculum.buffer
-            let text
+            let extractTextPdf: pdfParse.Result
+            let extractTextWord: string
+            const supportedTypes = [
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/octet-stream'
+            ];
+
+            if (!supportedTypes.includes(curriculum.mimetype)) {
+                throw new UnsupportedMediaTypeException('Unsupported file type');
+            }
+
+            // Ajustar tipo MIME si es necesario
+            if (curriculum.mimetype === 'application/octet-stream' && curriculum.originalname.endsWith('.pdf')) {
+                curriculum.mimetype = 'application/pdf';
+            }
+
             console.log({ curriculum })
             if (curriculum.mimetype === 'application/pdf') {
-                text = await this.extractTextFromPDF(curriculumBuffer);
+                extractTextPdf = await this.extractTextFromPDF(curriculumBuffer);
             } else if (curriculum.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                text = await this.extractTextFromWord(curriculumBuffer);
+                extractTextWord = await this.extractTextFromWord(curriculumBuffer);
             } else {
                 throw new Error('Unsupported file type');
             }
+
             if (curriculum) {
-                // cloud = await this.cloudinaryService.uploadFile(curriculum)
+                cloud = await this.cloudinaryService.uploadFile(curriculum)
             }
-            // const request = this.requestRepository.create({
-            //     ...createRequestDto,
-            //     curriculumVitae: cloud.secure_url
-            // })
-            return text
+            const campaign = await this.findOneCampaign(createRequestDto.campaignId)
+
+            const request = this.requestRepository.create({
+                ...createRequestDto,
+                curriculumVitae: cloud.secure_url,
+                campaign
+            })
+            const savedRequest = await this.requestRepository.save(request)
+
+            const { description, parameters } = campaign
+
+            const checkCurriculumDto: CheckCurriculumDto = {
+                prompt: extractTextPdf.text,
+                description,
+                parameters,
+            }
+
+            const evaluate = await this.evaluateCurriculum(checkCurriculumDto)
+            const validation = this.validationRepository.create({
+                ...evaluate,
+                request: savedRequest
+            })
+            console.log({validation})
+            await this.validationRepository.save(validation)
+            return { ...validation }
 
         } catch (error) {
             handleError(error)
@@ -99,7 +132,6 @@ export class CurriculumService {
         try {
 
             return await pdfParse(buffer);
-            // return data.text;
         } catch (error) {
             this.logger.error('Failed to extract text from PDF document', error.stack);
             throw new Error('Failed to process PDF file');
@@ -111,9 +143,73 @@ export class CurriculumService {
         return value;
     }
 
-    async findAllCampaign(){
-        return await this.campaignRepository.find()
+    async findOneCampaign(id: string) {
+        try {
+            console.log(id)
+            const campaign = await this.campaignRepository.findOne({
+                where: { id }
+            })
+
+            if (!campaign) throw new NotFoundException('not found campaign')
+            return campaign
+        } catch (error) {
+            handleError(error)
+        }
+
     }
+
+    async findOneRequest(id: string) {
+        try {
+            console.log(id)
+
+            const request = await this.requestRepository.findOne({
+                where: { id }
+            })
+
+            if (!request) throw new NotFoundException('not found request')
+            return request
+        } catch (error) {
+            handleError(error)
+        }
+    }
+
+    async findOneValidation(id: string) {
+        try {
+            const validation = await this.validationRepository.findOne({
+                where: { id }
+            })
+            if (!validation) throw new NotFoundException('the validation not found')
+            return validation
+        } catch (error) {
+            handleError(error)
+        }
+    }
+
+    async findAllRequest() {
+        try {
+            return await this.requestRepository.find()
+        } catch (error) {
+            handleError(error)
+        }
+    }
+
+    async findAllValidations() {
+        try {
+            return await this.validationRepository.find()
+        } catch (error) {
+            handleError(error)
+        }
+    }
+
+    async findAllCampaign() {
+        try {
+            return await this.campaignRepository.find()
+        } catch (error) {
+            handleError(error)
+        }
+    }
+
+
 }
 
 

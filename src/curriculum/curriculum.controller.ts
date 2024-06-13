@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Logger, ParseUUIDPipe } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { CheckCurriculumDto } from './dto/check-curriculum.dto';
 import { CreateCampaignDto, CreateRequestDto, CreateValidationDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { get } from 'http';
 
 
 @Controller('curriculum')
@@ -23,6 +24,7 @@ export class CurriculumController {
     @Body() CreateRequestDto: CreateRequestDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    
     return this.curriculumService.createRequest(CreateRequestDto, file)
   }
 
@@ -41,8 +43,41 @@ export class CurriculumController {
   }
 
   @Get('find-all-campaign')
-  findAllCampaign(){
+  findAllCampaign() {
     this.logger.log('find all campaign execute')
     return this.curriculumService.findAllCampaign()
   }
+
+  @Get('find-all-request')
+  findAllRequest() {
+    this.logger.log('find all request execute')
+    return this.curriculumService.findAllRequest()
+  }
+
+  @Get('find-all-validation')
+  findAllValidation() {
+    return this.curriculumService.findAllValidations()
+  }
+
+  @Get('find-one-campaign/:id')
+  findOneCampaign(
+    @Param('id', ParseUUIDPipe) id: string
+  ) {
+    return this.curriculumService.findOneCampaign(id)
+  }
+
+  @Get('find-one-request/:id')
+  findOneRequest(
+    @Param('id', ParseUUIDPipe) id: string
+  ) {
+    return this.curriculumService.findOneRequest(id)
+  }
+
+  @Get('find-one-validation/:id')
+  findOneValidation(
+    @Param('id',ParseUUIDPipe) id:string
+  ){
+    return this.curriculumService.findOneValidation(id)
+  }
+
 }

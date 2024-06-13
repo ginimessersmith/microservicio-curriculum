@@ -36,7 +36,7 @@ export const check_curriculum = async (openAi: OpenAI, options: Options) => {
                 retorna un json simple de la siguiente forma :
                 {
                     status: boolean (debes de enviar en falso),
-                   // lo demas null
+                   // lo demas, si son atributos de tipo entero o integer coloca 0, los string como un string vacio ''.
                 }
                 `,
             },

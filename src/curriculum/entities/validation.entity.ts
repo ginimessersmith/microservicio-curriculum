@@ -14,9 +14,7 @@ export class Validation{
     score: number
 
     @Column({
-        type: 'decimal',
-        scale: 2,
-        precision: 2,
+        type: 'int',
         nullable: false
     })
     success_percentage: number

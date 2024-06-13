@@ -4,6 +4,14 @@ import { BadRequestException, InternalServerErrorException, Logger, NotFoundExce
 export const handleError = (error: any): never => {
     const logger = new Logger('Auth Service - Handle Error')
     console.log({ error })
+    const supportedTypes = [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/octet-stream'
+      ];
+    //   if (!supportedTypes.includes(curriculum.mimetype)) {
+    //     throw new UnsupportedMediaTypeException('Unsupported file type');
+    //   }
 
     // if(error.EntityPropertyNotFoundError) throw new InternalServerErrorException('Property "permission" was not found in "Role". Make sure your query is correct.')
     if (error.code === '23505') throw new BadRequestException(error.detail)
