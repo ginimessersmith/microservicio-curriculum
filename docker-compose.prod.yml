@@ -4,11 +4,9 @@ services:
   app:
     build:
       context: .
-      target: dev
+      target: prod
       dockerfile: Dockerfile
-    volumes:
-      - .:/app/
-      - /app/node_modules
+   
     container_name: nest-app
     ports:
       - ${PORT}:${PORT}

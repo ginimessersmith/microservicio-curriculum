@@ -163,7 +163,8 @@ export class CurriculumService {
             console.log(id)
 
             const request = await this.requestRepository.findOne({
-                where: { id }
+                where: { id },
+                
             })
 
             if (!request) throw new NotFoundException('not found request')
@@ -187,7 +188,9 @@ export class CurriculumService {
 
     async findAllRequest() {
         try {
-            return await this.requestRepository.find()
+            return await this.requestRepository.find({
+                relations:['validation']
+            })
         } catch (error) {
             handleError(error)
         }
