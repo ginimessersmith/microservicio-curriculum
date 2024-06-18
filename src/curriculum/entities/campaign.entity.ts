@@ -28,7 +28,7 @@ export class Campaign {
     @Column({
         type: 'text',
         nullable: false
-    })
+    })  
     description: string
 
     @Column({

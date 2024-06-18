@@ -17,6 +17,9 @@ import * as mammoth from 'mammoth';
 import * as pdfParse from 'pdf-parse';
 import { getHeapSnapshot } from 'v8';
 import { ValidationInterface } from './interface/validation.interface';
+import axios from 'axios';
+import { CampaignInterface } from './interface/campaign.interface';
+
 
 @Injectable()
 export class CurriculumService {
@@ -57,7 +60,7 @@ export class CurriculumService {
 
     async createRequest(createRequestDto: CreateRequestDto, curriculum: Express.Multer.File,) {
         try {
-            console.log({createRequestDto,curriculum})
+            console.log({ createRequestDto, curriculum })
             let cloud: CloudinaryResponse
             const curriculumBuffer = curriculum.buffer
             let extractTextPdf: pdfParse.Result
@@ -105,12 +108,12 @@ export class CurriculumService {
                 parameters,
             }
 
-            const evaluate:ValidationInterface = await this.evaluateCurriculum(checkCurriculumDto)
+            const evaluate: ValidationInterface = await this.evaluateCurriculum(checkCurriculumDto)
             const validation = this.validationRepository.create({
                 ...evaluate,
                 request: savedRequest
             })
-            console.log({validation})
+            console.log({ validation })
             await this.validationRepository.save(validation)
             return { ...validation }
 
@@ -123,7 +126,7 @@ export class CurriculumService {
         return createValidationDto
     }
 
-    async evaluateCurriculum(checkCurriculum: CheckCurriculumDto):Promise<ValidationInterface> {
+    async evaluateCurriculum(checkCurriculum: CheckCurriculumDto): Promise<ValidationInterface> {
         this.logger.log('evaluate Curriculum execute')
         return await check_curriculum(this.openAI, checkCurriculum)
     }
@@ -164,7 +167,7 @@ export class CurriculumService {
 
             const request = await this.requestRepository.findOne({
                 where: { id },
-                
+
             })
 
             if (!request) throw new NotFoundException('not found request')
@@ -189,7 +192,7 @@ export class CurriculumService {
     async findAllRequest() {
         try {
             return await this.requestRepository.find({
-                relations:['validation']
+                relations: ['validation']
             })
         } catch (error) {
             handleError(error)
@@ -206,12 +209,34 @@ export class CurriculumService {
 
     async findAllCampaign() {
         try {
+            await this.allCampaing()
             return await this.campaignRepository.find()
+
         } catch (error) {
             handleError(error)
         }
     }
 
+    async allCampaing() {
+        const url: string = 'http://146.190.66.252:8080/vacancies'
+        try {
+            const response = await axios.get<CampaignInterface[]>(url);
+            for (const item of response.data) {
+                const createCampaignDto: CreateCampaignDto = {
+                idEnterprise:item.id,
+                name:item.title,
+                nameEnterprise:item.position.departmentBranch.department.department,
+                description:item.position.position,
+                parameters:item.description,
+                }
+                await this.createCampaign(createCampaignDto)
+            }
+            // console.log(response.data);
+            return response
+        } catch (error) {
+            console.error('Error fetching items:', error);
+        }
+    }
 
 }
 
