@@ -13,7 +13,10 @@ async function bootstrap() {
       forbidNonWhitelisted:true
     })
   )
-  await app.listen(+process.env.PORT);
+  // const host = '192.168.0.25'
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  await app.listen(port,);
+  // logger.log(`server in port: ${ +process.env.PORT}, host ${host}`)
   logger.log(`server in port: ${ +process.env.PORT}`)
 }
 bootstrap();

@@ -16,6 +16,7 @@ import { CloudinaryResponse } from 'src/cloudinary/cloudinary-response';
 import * as mammoth from 'mammoth';
 import * as pdfParse from 'pdf-parse';
 import { getHeapSnapshot } from 'v8';
+import { ValidationInterface } from './interface/validation.interface';
 
 @Injectable()
 export class CurriculumService {
@@ -56,7 +57,7 @@ export class CurriculumService {
 
     async createRequest(createRequestDto: CreateRequestDto, curriculum: Express.Multer.File,) {
         try {
-
+            console.log({createRequestDto,curriculum})
             let cloud: CloudinaryResponse
             const curriculumBuffer = curriculum.buffer
             let extractTextPdf: pdfParse.Result
@@ -71,7 +72,6 @@ export class CurriculumService {
                 throw new UnsupportedMediaTypeException('Unsupported file type');
             }
 
-            // Ajustar tipo MIME si es necesario
             if (curriculum.mimetype === 'application/octet-stream' && curriculum.originalname.endsWith('.pdf')) {
                 curriculum.mimetype = 'application/pdf';
             }
@@ -105,7 +105,7 @@ export class CurriculumService {
                 parameters,
             }
 
-            const evaluate = await this.evaluateCurriculum(checkCurriculumDto)
+            const evaluate:ValidationInterface = await this.evaluateCurriculum(checkCurriculumDto)
             const validation = this.validationRepository.create({
                 ...evaluate,
                 request: savedRequest
@@ -123,7 +123,7 @@ export class CurriculumService {
         return createValidationDto
     }
 
-    async evaluateCurriculum(checkCurriculum: CheckCurriculumDto) {
+    async evaluateCurriculum(checkCurriculum: CheckCurriculumDto):Promise<ValidationInterface> {
         this.logger.log('evaluate Curriculum execute')
         return await check_curriculum(this.openAI, checkCurriculum)
     }
