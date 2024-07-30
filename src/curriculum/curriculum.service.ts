@@ -40,7 +40,7 @@ export class CurriculumService {
         @InjectRepository(Validation)
         private validationRepository: Repository<Validation>,
 
-        private cloudinaryService: CloudinaryService
+        private cloudinaryService: CloudinaryService,
 
     ) { }
 
@@ -211,23 +211,25 @@ export class CurriculumService {
         try {
             await this.allCampaing()
             return await this.campaignRepository.find()
-
+         
         } catch (error) {
             handleError(error)
         }
     }
 
     async allCampaing() {
-        const url: string = 'http://146.190.66.252:8080/vacancies'
+        // const url: string = 'http://146.190.66.252:8080/vacancies'
+        const url: string = `${this.configService.get('URL_SPRINGBOOT')}`
+        console.log({url})
         try {
             const response = await axios.get<CampaignInterface[]>(url);
             for (const item of response.data) {
                 const createCampaignDto: CreateCampaignDto = {
-                idEnterprise:item.id,
-                name:item.title,
-                nameEnterprise:item.position.departmentBranch.department.department,
-                description:item.position.position,
-                parameters:item.description,
+                    idEnterprise: item.id,
+                    name: item.title,
+                    nameEnterprise: item.position.departmentBranch.department.department,
+                    description: item.position.position,
+                    parameters: item.description,
                 }
                 await this.createCampaign(createCampaignDto)
             }
