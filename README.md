@@ -1,73 +1,92 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 🚀 Microsistema de Análisis de Currículums (NestJS + OpenAI + Cloudinary)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> 
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412957?style=for-the-badge&logo=openai&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 
-## Description
+Este es el servicio backend encargado del procesamiento y análisis automatizado de documentos de currículum vitae. Desarrollado con **NestJS**, proporciona una API robusta que utiliza la API de **OpenAI** para extraer y evaluar información clave de los documentos. El almacenamiento de los archivos se gestiona eficientemente mediante **Cloudinary**, y la persistencia de datos se realiza con **PostgreSQL**.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Installation
+## ✨ Características Principales
+
+* **Framework :** Construido sobre **NestJS**, proporcionando una arquitectura modular, escalable y mantenible (siguiendo el patrón de microservicios).
+* **Análisis Inteligente:** Utiliza la API de **OpenAI** para el procesamiento de lenguaje natural (NLP) y la extracción de datos de valor de los CVs cargados.
+* **Almacenamiento en la Nube:** Integración con **Cloudinary** para el almacenamiento seguro y la gestión de archivos multimedia (el código fuente muestra el uso de `streamifier` para una subida eficiente).
+* **Contenedorizado:** Configurado para un despliegue rápido y consistente usando **Docker** y **Docker Compose**.
+* **Base de Datos:** Persistencia de datos gestionada con **PostgreSQL**.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+| Categoría | Tecnología | Versión de Node |
+| :--- | :--- | :--- |
+| **Backend** | NestJS, TypeScript | Node 19-alpine |
+| **Análisis** | OpenAI API | - |
+| **Almacenamiento** | Cloudinary, Multer, Streamifier | - |
+| **Contenedores** | Docker, Docker Compose (v3) | - |
+| **Base de Datos** | PostgreSQL (14.3) | - |
+
+---
+## Instalacion
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+## Comandos
 
 ```bash
-# development
+# desarrollo
 $ npm run start
 
 # watch mode
 $ npm run start:dev
 
-# production mode
+# produccion
 $ npm run start:prod
 ```
 
-## Test
+## ⚙️ Configuración del Entorno
+
+Este proyecto está diseñado para ejecutarse completamente dentro de contenedores de Docker. Necesitarás las siguientes **variables de entorno** para que la aplicación y todos los servicios se inicialicen correctamente.
+
+Crea un archivo llamado **`.env`** en la raíz del proyecto y complétalo con tus credenciales:
 
 ```bash
-# unit tests
-$ npm run test
+PORT=3000
 
-# e2e tests
-$ npm run test:e2e
+DB_USERNAME=user_app
+DB_PASSWORD=password_secure
+DB_NAME=curriculum_db
+DB_HOST=db
+DB_PORT=5432
 
-# test coverage
-$ npm run test:cov
-```
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
 
-## Support
+API_OPENAI=tu_clave_secreta_de_openai
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+El proyecto sigue una estructura modular y limpia, típica de NestJS, organizando el código por módulos de funcionalidad y utilizando una carpeta de `helpers` para utilidades genéricas:
+.
+├── src/
+│   ├── cloudinary/                  # Módulo de integración con Cloudinary.
+│   │   ├── cloudinary-response.ts   
+│   │   └── cloudinary.service.ts    # Maneja la subida a la nube.
+│   ├── curriculum/                  # Módulo principal de la lógica de negocio.
+│   │   ├── dto/                     # DTOs
+│   │   ├── entities/                # Modelos de la Base de Datos
+│   │   ├── interface/               # Interfaces clave
+│   │   ├── use-cases/               # Lógica de Análisis con OpenAI.
+│   │   └── curriculum.controller.ts # Rutas: /api/v1/curriculum/...
+│   ├── helpers/                     # Funciones de ayuda.
+│   └── main.ts                      # Punto de entrada de la aplicación.
+├── Dockerfile                       # Definición de la imagen (Multi-stage build).
+├── docker-compose.prod.yml          # Configuración de los servicios (app y db).
+├── .env.example                     # Archivo de ejemplo de entorno.
+└── README.md
