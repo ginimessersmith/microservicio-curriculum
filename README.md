@@ -13,7 +13,7 @@ Este es el servicio backend encargado del procesamiento y análisis automatizado
 
 ## ✨ Características Principales
 
-* **Framework :** Construido sobre **NestJS**, proporcionando una arquitectura modular, escalable y mantenible (siguiendo el patrón de microservicios).
+* **Framework :** Construido sobre **NestJS**, proporcionando una arquitectura modular, escalable y mantenible .
 * **Análisis Inteligente:** Utiliza la API de **OpenAI** para el procesamiento de lenguaje natural (NLP) y la extracción de datos de valor de los CVs cargados.
 * **Almacenamiento en la Nube:** Integración con **Cloudinary** para el almacenamiento seguro y la gestión de archivos multimedia (el código fuente muestra el uso de `streamifier` para una subida eficiente).
 * **Contenedorizado:** Configurado para un despliegue rápido y consistente usando **Docker** y **Docker Compose**.
